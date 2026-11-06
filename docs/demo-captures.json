@@ -1,0 +1,24 @@
+{
+  "captured": "2026-11-06T22:37:50.538Z",
+  "fictional": true,
+  "screens": [
+    {
+      "title": "Daily exceptions",
+      "ask": "Which receipts and fees need attention today?",
+      "command": "npm run reconcile -- attention",
+      "output": "  account             side       reference   currency  amount   age_days  owner  issue                    \n  ------------------  ---------  ----------  --------  -------  --------  -----  -------------------------\n  Kauri Wholesale NZ  ledger     REFUND-500  NZD       -65.00   40        Mere   unmatched over seven days\n  Kauri Wholesale NZ  ledger     SALE-200    NZD       800.00   20        Mere   overdue investigation    \n  Kauri Wholesale NZ  statement  SALE-200    NZD       795.00   19        Mere   unmatched over seven days\n  Kauri Wholesale AU  statement  FEE-900     AUD       -15.00   11        Priya  unmatched over seven days\n  Kauri Wholesale NZ  ledger     DUP-300     NZD       420.00   4         Mere   unmatched                \n  Kauri Wholesale NZ  ledger     DUP-300     NZD       420.00   4         Mere   unmatched                \n  Kauri Wholesale NZ  statement  DUP-300     NZD       420.00   3         Mere   unmatched                \n  Kauri Wholesale AU  ledger     SALE-100    AUD       1250.50  2         Priya  unmatched                \n  Kauri Wholesale NZ  ledger     BATCH-400   NZD       300.00   2         Mere   unmatched                \n  Kauri Wholesale NZ  ledger     BATCH-400   NZD       200.00   2         Mere   unmatched                \n  Kauri Wholesale NZ  ledger     SALE-100    NZD       1250.50  2         Mere   unmatched                \n  Kauri Wholesale AU  statement  SALE-100    AUD       1250.50  1         Priya  unmatched                \n  Kauri Wholesale NZ  statement  BATCH-400   NZD       500.00   1         Mere   unmatched                \n  Kauri Wholesale NZ  statement  SALE-100    NZD       1250.50  1         Mere   unmatched"
+    },
+    {
+      "title": "Match suggestions",
+      "ask": "Which references have one possible match, and which are ambiguous?",
+      "command": "npm run reconcile -- candidates",
+      "output": "  account             reference  currency  amount   date_gap  decision   ledger_id  statement_id\n  ------------------  ---------  --------  -------  --------  ---------  ---------  ------------\n  Kauri Wholesale AU  SALE-100   AUD       1250.50  1         unique     faf6dbec   3e2ca247    \n  Kauri Wholesale NZ  DUP-300    NZD       420.00   1         ambiguous  18a09d88   7dfd13cd    \n  Kauri Wholesale NZ  DUP-300    NZD       420.00   1         ambiguous  adf0e61d   7dfd13cd    \n  Kauri Wholesale NZ  SALE-100   NZD       1250.50  1         unique     0a72d5f4   fa8f1476"
+    },
+    {
+      "title": "Owner review",
+      "ask": "Who owns the oldest unresolved items?",
+      "command": "npm run reconcile -- owner-load",
+      "output": "  owner  currency  items  oldest_days  overdue_cases  gross  \n  -----  --------  -----  -----------  -------------  -------\n  Mere   NZD       11     40           1              6421.00\n  Priya  AUD       3      11           0              2516.00"
+    }
+  ]
+}

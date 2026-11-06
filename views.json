@@ -1,13 +1,47 @@
 [
   {
-    "name": "week",
-    "title": "This week",
-    "subtitle": "Transaction Reconciliation for Claude Code: what needs attention, rendered by npm run view",
+    "name": "daily-reconciliation",
+    "title": "Daily reconciliation",
+    "subtitle": "Movements, proposed matches and unresolved items",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "Coverage by account",
+        "sql": "select account,currency,transactions,unmatched,proposed,approved,difference_cents from account_coverage order by account",
+        "note": "Movement totals are not closing balances. No netting across currencies."
+      },
+      {
+        "title": "Items needing attention",
+        "sql": "select account,reference,currency,amount_cents,age_days,owner,issue from attention_queue order by age_days desc"
+      }
+    ]
+  },
+  {
+    "name": "investigation-backlog",
+    "title": "Investigation backlog",
+    "sections": [
+      {
+        "title": "Owner workload",
+        "sql": "select * from owner_backlog order by owner,currency",
+        "note": "Gross values count both sides. They are workload exposure, not a loss estimate."
+      },
+      {
+        "title": "Duplicate references",
+        "sql": "select account,currency,side,reference,amount_cents,occurrences from duplicate_references"
+      }
+    ]
+  },
+  {
+    "name": "review-controls",
+    "title": "Review controls",
+    "sections": [
+      {
+        "title": "Evidence and review findings",
+        "sql": "select rule,account,finding from compliance_findings order by rule,account",
+        "note": "Run the compliance command to check archived source-file hashes too."
+      },
+      {
+        "title": "Proposed and approved groups",
+        "sql": "select a.name account,m.status,m.reason,m.proposed_by,m.approved_by from matches m join accounts a on a.id=m.account_id order by m.created_at"
       }
     ]
   }

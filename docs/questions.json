@@ -1,0 +1,42 @@
+[
+  {
+    "question": "Which accounts have unexplained differences in their imported movements?",
+    "command": "coverage"
+  },
+  {
+    "question": "Which identical references have more than one possible match?",
+    "command": "candidates"
+  },
+  {
+    "question": "Which unmatched receipts are more than a week old?",
+    "command": "aged"
+  },
+  {
+    "question": "Who owns the oldest investigation and how much work is waiting?",
+    "command": "owner-load"
+  },
+  {
+    "question": "Which settlements combine several receipts?",
+    "command": "matches"
+  },
+  {
+    "question": "Which proposed matches still need a second reviewer?",
+    "command": "matches"
+  },
+  {
+    "question": "Which transactions have no imported source evidence?",
+    "command": "compliance"
+  },
+  {
+    "question": "Which source files have changed since we imported them?",
+    "command": "compliance"
+  },
+  {
+    "question": "Which references repeat on the same side of an account?",
+    "command": "duplicates"
+  },
+  {
+    "question": "Which investigation notes explain why a match was reversed?",
+    "command": "transaction"
+  }
+]

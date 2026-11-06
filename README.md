@@ -1,115 +1,134 @@
-<h1 align="center">Transaction Reconciliation for Claude Code</h1>
+# Transaction Reconciliation for Claude Code
 
-<p align="center">
-  <strong>The open-source transaction reconciliation desk that is just a database and Claude Code.</strong>
-</p>
+Match ledger movements to statement items, investigate the gaps and keep the evidence in a database you own.
 
-<p align="center">
-  Created by <a href="https://www.enterprisedna.co"><strong>Enterprise DNA</strong></a>. Free and open source. Works with Claude Code, Codex, OpenCode or Cursor.
-</p>
+| Do it yourself | We customise it | We run it for you |
+|---|---|---|
+| Free, MIT. Install and try the demo. | Your exports, matching rules, review controls and documents. | Installed and operated through Omni by Enterprise DNA. One setup fee, then a retainer. |
 
-<!-- three-doors -->
-<table align="center">
-  <tr>
-    <td align="center"><strong>Do it yourself</strong><br/>Clone it, run it, own it. Free, MIT.<br/><a href="#quick-start">Quick start</a></td>
-    <td align="center"><strong>We customise it</strong><br/>Your fields, your rules, your ReconArt data brought across.<br/><a href="https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=reconart">Book a call</a></td>
-    <td align="center"><strong>We run it for you</strong><br/>Installed, connected and operated inside Omni. Setup fee, then a retainer.<br/><a href="https://enterprisedna.co/omni/instead-of/reconart?utm_source=github&utm_medium=readme&utm_campaign=reconart">How it works</a></td>
-  </tr>
-</table>
+[Get your version built](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=reconart) · [Instead of ReconArt](https://enterprisedna.co/omni/instead-of/reconart)
 
-<p align="center">
-  <a href="#what-is-this">What is this</a> &bull;
-  <a href="#why-no-front-end">Why no front end</a> &bull;
-  <a href="#quick-start">Quick start</a> &bull;
-  <a href="#the-commands">Commands</a> &bull;
-  <a href="#instead-of-reconart">Instead of ReconArt</a> &bull;
-  <a href="#want-it-installed-and-run-for-you">Installed for you</a> &bull;
-  <a href="#license">License</a>
-</p>
+## Start with the daily review
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Node-20+-339933?style=flat-square" alt="Node 20+" />
-  <img src="https://img.shields.io/badge/PostgreSQL-any-336791?style=flat-square" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/PGlite-embedded-3ecf8e?style=flat-square" alt="PGlite" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="MIT License" />
-</p>
-
----
-
-## What is this
-
-Transaction Reconciliation for Claude Code does the job you pay ReconArt for, as a Postgres database and a set of agent commands. There is no web front end. You open the folder in [Claude Code](https://claude.com/claude-code) (or Codex, OpenCode, Cursor: see `AGENTS.md`) and ask for what you want in plain language. It runs the right query, and it can answer questions the ReconArt dashboard cannot.
-
-<!-- TODO(author): the annual bill. One sentence: what a 10 to 50 person business typically pays ReconArt per year, all in, with a source. -->
-
-Want the same thing with a web front end, or built on a different stack? That is a customisation, and it is exactly what Enterprise DNA does: [book a call](https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=reconart).
-
-<!-- TODO(author): two or three sentences on what this specific product covers and who it is for. -->
-
-## Why no front end
-
-- The front end was only ever there because the database was hard to talk to. That is no longer true.
-- Your data sits in plain Postgres tables you own. Any tool can read them. No export, no lock-in.
-- No seats, no tiers, no add-ons. Read [docs/why-no-front-end.md](docs/why-no-front-end.md) for the honest trade-offs too.
-
-## Quick start
-
-Sixty seconds, no database install (an embedded Postgres runs inside Node):
+Node 20 or later.
 
 ```bash
 git clone https://github.com/Enterprise-DNA-OS/transaction-reconciliation-for-claude-code.git
 cd transaction-reconciliation-for-claude-code
 npm install
+npm test
 npm run demo
+npm run reconcile -- daily-reconcile
+npm run docs
+npm run view
 ```
 
-Then open the folder in Claude Code and type a slash command. <!-- TODO(author): name the first command to try. -->
+Open the folder with Claude Code, Codex, OpenCode or Cursor. CLAUDE.md and AGENTS.md use the same 31 slash-command recipes and 29 CLI commands. Every CLI command accepts --json. Names match without case sensitivity, unique partial IDs work, and ambiguous references list candidates and exit 1.
 
-### Use it with your own Postgres or Supabase
+PGlite runs locally without a server. DATABASE_URL selects PostgreSQL. DATA_DIR chooses the embedded database and the source-file archive, including with PostgreSQL. OUTPUT_DIR selects private outputs. Back up the database and DATA_DIR/sources together. The demo is fictional and contains overdue items, short settlements, duplicate references, grouped receipts and NZD/AUD accounts. Never seed a live database. PostgreSQL demo seeding requires ALLOW_DEMO_DATABASE=1.
 
-Copy `.env.example` to `.env`, set `DATABASE_URL`, then `npm run migrate`. Same commands, shared data, no per-seat fee.
+## Five finance rituals
 
-## The commands
+- /daily-reconcile: compare imported movements, inspect candidate pairs and review outstanding items.
+- /match and /approve: propose an equal-total group, then record a different person's review.
+- /open-case, /assign, /log and /resolve: investigate differences with an owner, due date and written conclusion.
+- /weekly-review: combine coverage, candidates, attention and owner workload for Monday.
+- /compliance and /draft-statement: check evidence and prepare the review paperwork.
 
-<!-- TODO(author): a table of the slash commands in .claude/commands and what each one does. -->
+## Matching you can inspect
 
-| Command | What it does |
+Candidate suggestions require the same account, equal signed amounts, matching reference ignoring case/outer spaces and dates within three days. Multiple possible pairs are labelled ambiguous. Suggestions never create or approve a match. Explicit grouped matches support one-to-many and many-to-many settlements with exact signed totals. Different accounts and currencies cannot mix. Unequal amounts remain an investigation; the base never writes them off.
+
+Approvals require a different actor name and no open investigation on a member. Actor names are attribution, not authenticated identity. Use trusted local operators; configure authenticated identities and database roles for shared use. A reversal releases the source items and keeps the old group and review record. Source rows and event notes are immutable through normal database operations. A privileged database owner can bypass controls, so this is not tamper-proof storage.
+
+A zero movement difference is not proof that an account reconciles. Check unmatched items, period completeness and opening balances separately. Values are in integer cents; supported account currencies are NZD, AUD, USD, GBP and EUR, with at most two decimal places. There are no exchange-rate conversions. Owner workload is gross exposure across both sides, not an estimated loss.
+
+## Ten questions this build answers
+
+These are working analyses, not a claim that ReconArt cannot provide custom reports.
+
+1. Which accounts have unexplained differences in their imported movements? Run `coverage`.
+2. Which identical references have more than one possible match? Run `candidates`.
+3. Which unmatched receipts are more than a week old? Run `aged`.
+4. Who owns the oldest investigation and how much work is waiting? Run `owner-load`.
+5. Which settlements combine several receipts? Run `matches`.
+6. Which proposed matches still need a second reviewer? Run `matches`.
+7. Which transactions have no imported source evidence? Run `compliance`.
+8. Which source files have changed since we imported them? Run `compliance`.
+9. Which references repeat on the same side of an account? Run `duplicates`.
+10. Which investigation notes explain why a match was reversed? Run `transaction`.
+
+## Bring your ReconArt records
+
+ReconArt exports have configurable columns. Supply the actual heading map and import one CSV per account and side. The original source file, row data and hash are preserved. A dry run changes nothing. Repeating an unchanged export creates no duplicates. Changed records stop the import instead of overwriting history.
+
+```bash
+npm run reconcile -- import reconart --file=fixtures/reconart-ledger.csv --mapping=fixtures/reconart-mapping.json --account="Kauri Wholesale NZ" --side=ledger --period-end=2026-10-31 --actor="Your name" --dry-run
+```
+
+The fixtures are illustrative configured exports, not universal vendor headings. Existing vendor matches, approvals and attachments require separate migration. [Export, map and reconcile the switch](docs/replace-reconart.md).
+
+## Documents, views and controls
+
+Edit brand.json for the business name, logo and colours. npm run docs renders reconciliation statements, investigation worksheets and match review records. npm run view renders the daily review, investigation backlog and review controls. /draft-statement and /draft-investigation write individual files to drafts/. Nothing sends or publishes.
+
+/compliance checks source links, archived-file hashes, retention metadata, outstanding reviews and overdue cases. [Legal sources and policy boundaries](docs/compliance.md). Imported files receive a conservative retention marker, and there is no delete command. The free version never moves money, posts journals, connects bank feeds or certifies regulated client-money accounts. [What a screen adds](docs/why-no-front-end.md).
+
+## Your first hour: ten things to ask for
+
+1. Put our business name and logo on the statement.
+2. Import one account without saving it.
+3. Map the headings in our actual export.
+4. Show the oldest unresolved receipts.
+5. Explain every ambiguous reference.
+6. Group the receipts in one known settlement.
+7. Add our evidence reference to investigations.
+8. Change the aged-item threshold with a tested migration.
+9. Show workloads separately for each currency.
+10. Draft the Monday reconciliation review.
+
+/customise changes fields and rules through a tested migration. /new-view adds a read-only report. The operator owns the rules, exports and review process.
+
+## Commands
+
+| Command | Job |
 |---|---|
-| `/...` | ... |
+| `accounts` | List the reconciliation accounts and owners. |
+| `coverage` | Review imported transaction counts and movement totals by account. |
+| `candidates` | Find unique and ambiguous pairs under the exact-reference rule. |
+| `matches` | Review proposed, approved and reversed matching groups. |
+| `transactions` | Read transactions with their matching status. |
+| `transaction` | Read one item, its source data and matching history. |
+| `imports` | Review source counts, totals, hashes and retention dates. |
+| `exceptions` | Read the investigation register. |
+| `attention` | List unmatched items, proposals and overdue investigations. |
+| `aged` | Review unmatched and unresolved items older than seven days. |
+| `duplicates` | Find repeated references and amounts on the same account side. |
+| `owner-load` | Review investigation workload without mixing currencies. |
+| `daily-reconcile` | Run the daily coverage, candidate and attention review. |
+| `weekly-review` | Run the Monday coverage, candidate, attention and owner review. |
+| `compliance` | Check source evidence, retention metadata, archived hashes and independent reviews. |
+| `add-account` | Create an account with its currency, jurisdiction and responsible person. |
+| `add` | Record a manual transaction with a reason. Missing imported evidence remains a finding. |
+| `import` | Bring a configured ReconArt CSV export across after a dry run. |
+| `match` | Propose an exact-total group from the recorded source items. |
+| `approve` | Record a second person's review of a proposed match. |
+| `reverse` | Reverse a proposal or approved match while keeping the history. |
+| `open-case` | Open an investigation for a transaction. |
+| `assign` | Reassign an open investigation and its due date. |
+| `resolve` | Record the investigation conclusion. This does not match or write off a transaction. |
+| `log` | Append a note to an account, transaction, match or case. |
+| `export` | Export all records to JSON and transaction presentation to CSV. |
+| `draft-statement` | Write a reconciliation movement statement for internal review. |
+| `draft-investigation` | Write a case worksheet with notes and source details. |
+| `help` | Read the available CLI commands. |
 
-## Instead of ReconArt
+## Verification and price context
 
-<!-- TODO(author): how to bring data across from ReconArt; link docs/replace-reconart.md -->
+npm test uses a temporary database and exercises all 29 CLI commands, including exact and grouped matches, ambiguity, cross-account rejection, independent review, open-case blocking, reversal history, invalid imports, rollback, repeats, altered source files, exports and escaped documents. The workflow runs Node 20/22 on Windows/Linux and PostgreSQL 17. Read the actual workflow results before claiming a platform passed. TEST_DATABASE_URL must be an empty disposable database.
 
-## Architecture
+ReconArt now quotes its annual editions privately. A reseller listing annualises to five figures; this is not a current vendor quote or a verified NZ/AU customer invoice. [Selection evidence and all six scores](docs/research.md).
 
-```
-transaction-reconciliation-for-claude-code/
-  CLAUDE.md                 how the operator wants this run (routing table + house rules)
-  AGENTS.md                 the same, for Codex / OpenCode / Cursor / Gemini CLI
-  .claude/commands/         the slash commands
-  scripts/                  the CLI the commands drive
-  scripts/lib/db.mjs        one adapter: DATABASE_URL (pg) or embedded PGlite
-  supabase/migrations/      plain SQL schema
-  supabase/seed.sql         demo data
-  docs/                     the thesis and the migration guide
-```
+Enterprise DNA maps agreed exports, configures your review controls and runs your version through Omni by Enterprise DNA, for one setup fee then a retainer. [Book 30 minutes with Sam](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=reconart).
 
-## Built for coding agents
-
-The database, CLI and command recipes work with Claude Code, Codex, OpenCode or Cursor. Ask your coding agent for a new command and have it implement and test the change against the same records.
-
-## Contributing
-
-Issues and pull requests are welcome. Keep the shape: plain SQL, a small CLI, a slash command per recurring job, no front end.
-
-## Want it installed and run for you?
-
-Enterprise DNA installs Transaction Reconciliation for Claude Code for your business, migrates your ReconArt data, connects it to the rest of your tools, and runs it for you as part of **Omni**, our managed Command Center. One setup fee, then a monthly retainer.
-
-- Book a call: [enterprisedna.co/omni/book](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=reconart)
-- Read more: [enterprisedna.co/omni/instead-of/reconart](https://enterprisedna.co/omni/instead-of/reconart?utm_source=github&utm_medium=readme&utm_campaign=reconart)
-
-## License
-
-MIT. Copyright (c) 2026 Enterprise DNA.
+MIT. Not affiliated with ReconArt or Anthropic. Hosting, storage and coding-agent usage have their own costs.

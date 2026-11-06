@@ -1,0 +1,3 @@
+Transaction ID,Booking Date,Reference,Amount,Description
+EX-L-1,2026-10-01,IMPORT-1,1250.50,"Settlement, shop one"
+EX-L-2,2026-10-02,IMPORT-2,-25.40,Refund

@@ -1,11 +1,61 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
+    "name": "reconciliation-statement",
+    "title": "Draft reconciliation statement",
+    "for_each": "select id,name from accounts order by name",
     "file": "name",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Account movement totals",
+        "sql": "select account,currency,ledger_cents,statement_cents,difference_cents,unmatched,proposed,approved from account_coverage where id=$1",
+        "note": "Review source completeness and opening balances separately. This is transaction reconciliation evidence, not bank balance certification."
+      },
+      {
+        "title": "Outstanding transactions",
+        "sql": "select side,external_id,booked_on,reference,currency,amount_cents,match_status from transaction_status where account_id=$1 and match_status<>'approved' order by booked_on"
+      },
+      {
+        "title": "Import register",
+        "sql": "select side,source_name,row_count,total_cents,period_end,retain_until,sha256 from imports where account_id=$1 order by created_at"
+      }
+    ]
+  },
+  {
+    "name": "investigation-worksheet",
+    "title": "Draft investigation worksheet",
+    "for_each": "select id,title as name from cases order by due_on",
+    "file": "name",
+    "sections": [
+      {
+        "title": "Investigation",
+        "sql": "select title,owner,due_on,status,resolution from cases where id=$1",
+        "layout": "record"
+      },
+      {
+        "title": "Source item",
+        "sql": "select t.account,t.side,t.external_id,t.booked_on,t.reference,t.currency,t.amount_cents,t.match_status from transaction_status t join cases c on c.transaction_id=t.id where c.id=$1"
+      },
+      {
+        "title": "Notes and decisions",
+        "sql": "select action,actor,detail,created_at from events where entity_id=$1 order by created_at"
+      }
+    ]
+  },
+  {
+    "name": "match-review",
+    "title": "Draft match review record",
+    "for_each": "select id,reason as name from matches where status<>'reversed' order by created_at",
+    "file": "name",
+    "sections": [
+      {
+        "title": "Review record",
+        "sql": "select status,reason,proposed_by,approved_by,approved_at from matches where id=$1",
+        "layout": "record"
+      },
+      {
+        "title": "Supporting transactions",
+        "sql": "select t.side,t.external_id,t.booked_on,t.reference,t.amount_cents from transactions t join match_members mm on mm.transaction_id=t.id where mm.match_id=$1 order by t.side,t.external_id"
+      }
     ]
   }
 ]

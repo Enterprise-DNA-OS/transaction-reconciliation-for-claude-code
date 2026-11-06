@@ -7,6 +7,7 @@ import { pathToFileURL } from 'node:url';
 import { getDb, REPO_ROOT } from './lib/db.mjs';
 
 export async function seed(db) {
+  if (db.mode === 'postgres' && process.env.ALLOW_DEMO_DATABASE !== '1') throw Error('Demo seeding requires ALLOW_DEMO_DATABASE=1 for a disposable database');
   await db.exec('BEGIN');
   try {
     await db.exec(readFileSync(path.join(REPO_ROOT, 'supabase', 'seed.sql'), 'utf8'));
